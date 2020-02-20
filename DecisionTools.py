@@ -7,6 +7,7 @@ import scipy.stats as st
 from statsmodels.stats.diagnostic import acorr_ljungbox, het_arch
 import matplotlib.pyplot as plt
 from statsmodels.graphics.tsaplots import plot_acf,plot_pacf
+from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.stattools import pacf, acf
 from arch import arch_model
 from scipy.optimize import least_squares
@@ -94,21 +95,33 @@ def modified_blackScholes(instrument,dt):
 
     return st
 
-""""
 
+
+
+
+"""
 rendimientos2=[i**2 for i in rendimientos]
 acf = estimate_autocorrelation(rendimientos2)
 pacf = pacf(rendimientos2,20)
-model = arch_model(rendimientos2,mean='Zero',vol='Garch',p=2,q=10)
+model = arch_model(rendimientos,mean='Zero',vol='Garch',p=2,q=2)
 model_fit = model.fit()
 yhat = model_fit.forecast(horizon=1)
 #fig.suptitle('ACF,PACF')
 #plot_pacf(rendimientos2,lags=20)
 #plot_pacf(rendimientos,lags=20)
 """
+rendimientos = returns('USD_CAD','D')
 
-precios =get_closes("EUR_USD",'D')
-var= parametric_var("EUR_USD",'D',800,'long')
+arima_array=list()
+for p in range(1,4):
+    for q in range(1,4):
+        arima_array=arima_array.append(ARIMA(rendimientos,(p,1,q)))
+
+
+
+
+precios =get_closes("USD_CAD",'D')
+var= parametric_var("USD_CAD",'D',800,'long')
 precio_siguiente = modified_blackScholes(precios,1)
 
 
